@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function ProductCard() {
+export default function ProductCard(data) {
     return (
         <>
             <div className="relative m-5 flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md">
@@ -11,7 +11,7 @@ export default function ProductCard() {
                 <div className="mt-4 px-5 pb-5">
 
                     <Link className="text-xl tracking-tight text-slate-900" href={"/product/nike-shoes"}>
-                        <h5 className="text-xl tracking-tight text-slate-900">Nike Air MX Super 2500 - Red</h5>
+                        <h5 className="text-xl tracking-tight text-slate-900">Name</h5>
                     </Link>
 
                     <div className="mt-2 mb-5 flex items-center justify-between">
