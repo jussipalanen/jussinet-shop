@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { getProductCategories, getProductCategory } from "../../utils/wordpress";
-import { use } from "react";
-
+import { getProductCategories, getProductCategoryBySlug } from "../../utils/wordpress";
 
 /**
  * Create the three view
@@ -33,23 +31,18 @@ export function CreateTree(list) {
  * @param items 
  * @returns 
  */
-export function TreeRender(items, listClass = '', category_id = null) {
-
-    if (items.children === undefined && !items.children) {
-        listClass = '';
-    }
-
+export function TreeRender(items, category_id = null, parents = []) {
     return (
         <>
             {items.map((data, index) => (
-                <li className={`product-cat-id-${data.id} product-parent-cat-id-${data.parent} ml-4`}>
+                <li className={`product-cat-id-${data.id} product-parent-cat-id-${data.parent} ml-4 mb-2 mt-2`} key={index}>
                     <Link href={'/category/' + data.slug}
                         data-category-id={data.id}
                         data-category-parent={data.parent}
                     >{data.name}</Link>
                     {data.children.length > 0 &&
-                        <ul className={"product-children " + (category_id == data.id || category_id == data.parent ? 'show' : 'hidden')}>
-                            {TreeRender(data.children)}
+                        <ul className={"product-children " + (parents.find((parentValue) => parentValue == data.id) ? 'show' : 'hidden')}>
+                            {TreeRender(data.children, category_id, parents)}
                         </ul>
                     }
                 </li>
@@ -58,26 +51,41 @@ export function TreeRender(items, listClass = '', category_id = null) {
     )
 }
 
-export default function ListProductCategories({ category = null }) {
-    const { posts } = use(getProductCategories({
+async function getCategory(slug) {
+    return getProductCategoryBySlug(slug);
+}
+
+async function getData() {
+    return getProductCategories({
         per_page: 100,
         order: 'asc',
         orderby: 'name',
-    }));
-    const tree = CreateTree(posts);
-    let category_id = null;
+    });
+}
 
-
-    if (category) {
-        const { post } = use(getProductCategory(category));
-        if (post && post.id !== undefined) {
-            category_id = post.id;
+export default function ListProductCategories({ categories = [], category = null }) {
+    const tree = CreateTree(categories);
+    let category_id = category && category.id !== undefined ? category.id : null;
+    const getAncestors = (target, children, ancestors = []) => {
+        for (let node of children) {
+            if (node.id === target) {
+                return ancestors.concat(node.id);
+            }
+            const found = getAncestors(target, node.children, ancestors.concat(node.id));
+            if (found) {
+                return found;
+            }
         }
-    }
+        return undefined;
+    };
 
+    const parentsList = getAncestors(category_id, tree);
     return (
-        <ul>
-            {TreeRender(tree, '', category_id)}
-        </ul>
+        <div className="bg-slate-300 mr-4 pt-4 pb-4">
+            <ul>
+                {TreeRender(tree, category_id, parentsList)}
+            </ul>
+        </div>
+
     )
 }

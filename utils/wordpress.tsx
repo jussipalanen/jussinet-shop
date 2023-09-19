@@ -16,22 +16,9 @@ export function getWooApi()
  * @returns 
  */
 export async function getProduct(slug) {
-
-    try {
-        return await getWooApi().get("products?slug=" + slug).then(function(response){
-            return {
-                post: response.data[0] ? response.data[0] : [],
-            };
-        });
-    } 
-    catch( error )
-    {
-        console.log(error);
-    }
-
-    return {
-        post: []
-    };
+    return await getWooApi().get("products?slug=" + slug).then(function(response){
+        return response.data[0] ? response.data[0] : {};
+    });
 }   
 
 /**
@@ -40,19 +27,9 @@ export async function getProduct(slug) {
  */
 export async function getProducts(params = {}) {
 
-    try {
-        return await getWooApi().get("products", params).then(function(response){
-            return {
-                posts: response.data,
-            };
-        });
-    } catch (error) {
-        console.log(error);
-    }
-
-    return {
-        posts: []
-    };
+    return await getWooApi().get("products", params).then(function(response){
+        return  response.data;
+    })
 }
 
 /**
@@ -60,11 +37,9 @@ export async function getProducts(params = {}) {
  * @param slug
  * @returns 
  */
-export async function getProductCategory(slug) {
+export async function getProductCategoryBySlug(slug) {
     const data = await getWooApi().get("products/categories?slug=" + slug).then(function(response){
-        return {
-            post: response.data[0] ? response.data[0] : [],
-        };
+        return response.data[0] ? response.data[0] : [];
     });
     return data;
 }   
@@ -96,8 +71,5 @@ export async function getProductCategories(params = {}) {
     } catch (error) {
         console.log(error);
     }
-
-    return {
-        posts: rows
-    };
+    return rows;
 }

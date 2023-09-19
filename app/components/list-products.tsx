@@ -1,7 +1,6 @@
-import { getProductCategory, getProducts } from "@/utils/wordpress";
+import { getProductCategoryBySlug, getProducts } from "@/utils/wordpress";
 import { use } from "react";
 import ProductCard from "./product-card";
-
 
 
 /**
@@ -9,31 +8,18 @@ import ProductCard from "./product-card";
  * @param param
  * @returns 
  */
-export default function ListProducts({category = null}) {
-
-    let category_name = '';
-    let params = {
-        per_page: 100,
-    };
-
-    if( category )
-    {
-        const { post } = use(getProductCategory( category ));
-        if( post && post.id !== undefined )
-        {
-            category_name = post.name;
-            params.category = post.id;
-        }
-    }
-
-    const { posts } = use(getProducts(params));
+export default function ListProducts({ products = [], category = null }) {
     return (
-        <div className="mt-4 mb-4">
-            <h2 className="text-2xl">{category_name}</h2>
-            <div className="flex flex-wrap -mx-10">
-                {posts.map((data, index) => (
-                    <ProductCard data={data} key={index} />
-                ))}
+        <div>
+            <div className="mt-4 mb-4">
+                { category && category.name !== undefined && (
+                    <h2 className="text-2xl">{category.name}</h2>
+                )}
+                <div className="flex flex-wrap -mx-10">
+                    {products.map((product, index) => (
+                        <ProductCard data={product} key={index} />
+                    ))}
+                </div>
             </div>
         </div>
     )
