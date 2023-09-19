@@ -7,7 +7,7 @@ export default function Cart() {
 
     return (
         <>
-            <div className="cart">
+            <div className="mini-cart text-white">
                 { data() }
             </div>
         </>

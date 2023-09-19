@@ -1,20 +1,23 @@
-import { getProducts } from "../utils/wordpress";
+import { use } from "react";
 import ProductCard from "./product-card";
+import { getProducts } from "../../utils/wordpress";
 
 
-export default async function PopularProducts() {
+export default function PopularProducts() {
 
-    const products = await getProducts();
+    const { posts } = use(getProducts({
+        per_page: 8,
+        order: 'asc',
+        orderby: 'popularity'
+    }));
+    
     return (
         <div className="mt-4 mb-4">
             <h2 className="text-2xl">Popular Products</h2>
             <div className="flex flex-wrap -mx-10">
-                {products.map(data => {
-                    return (
-                        <ProductCard data={data} />
-                    );
-                })
-                }
+                {posts.map((data, index) => (
+                    <ProductCard data={data} key={index} />
+                ))}
             </div>
         </div>
     )
